@@ -7,12 +7,12 @@ describe EmailsController do
 
     it 'renders bad request when invalid parameters are passed' do
       post(:send, params: {
-        to: 'nottimcook@notapple.com',
-        to_name: 'Tim Cook',
-        from: 'michael@groeneman.com',
-        from_name: 'Michael Groeneman',
-        subject: 'Hi Tim',
-        body: 'This is some content for Tim Cook'
+        to: 'michael@groeneman.com',
+        to_name: 'Michael Groeneman',
+        from: 'bob@groeneman.com',
+        from_name: 'Bob Groeneman',
+        subject: 'Hi Michael',
+        body: 'This is some content for Michael Groeneman'
       })
 
       expect(response).to have_http_status(:ok)

@@ -11,4 +11,12 @@ class Message
     with: EMAIL_VALIDATION_REGEX,
     message: "must be an email address"
   }
+
+  def sanitized_body
+    Rails::Html::FullSanitizer.new.sanitize(body)
+  end
+
+  def deliver(service = SendgridMailer)
+    service.call(self)
+  end
 end
