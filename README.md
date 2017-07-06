@@ -43,7 +43,8 @@ POST /emails
   "from_name": "Fake Corp Billing",
   "subject": "A Message from Fake Corporation",
   "body": "<h1>Your Bill</h1><p>$10</p>"
-}```
+}
+```
 
 If the parameters are valid and Mailproxy is able to deliver the message, it will respond with `200 OK` (with no response body). If the parameters were invalid, it will respond with `400 Bad Request` with an array of `errors`. If the parameters were valid but Mailproxy received an error from the gateway, it will respond with `500 Internal Server Error`, along with an array of `errors` that can assist in troubleshooting the gateway.
 
