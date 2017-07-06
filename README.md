@@ -61,3 +61,21 @@ Additional mail gateways can be supported by creating a class that responds to t
 - `#errors` returns an array of errors from the gateway if the message was note delivered.
 
 The `Message` object responds to methods named exactly the same as the API parameters, as well as an additional `sanitized_body` method that returns the body as plain text.
+
+In order to set a new mail gateway as the default using the `MAIL_GATEWAY` environment variable, the new gateway needs to be registered in `config/initializers/mail_gateway.rb`.
+
+## Design
+
+### Frameworks and Packages
+
+Mailproxy is a Rails 5 API-only application. Rails is probably overkill for this project, but I chose to use it anyway because of my familiarity with the framework. Working with a solid framework that I know well allowed me to complete the project as quickly as possible. To reduce the footprint of the default Rails app, I removed several default gems (including ActiveRecord) that weren't necessary for this project.
+
+I tried to stick with default Ruby/Rails functionality for simplicity's sake, including for converting HTML to plain text. I did however add the [RestClient](https://github.com/rest-client/rest-client) Gem, as Ruby's default `Net::HTTP` feels unnecessarily verbose and complex to me. I used RSpec for testing, again due to my existing familiarity.
+
+### Future Work
+
+There are a few possible areas for future work:
+
+- API monitoring: check the status of the Sendgrid and Mailgun APIs automatically (either by pinging a status page, or by monitoring the rates of 500-series errors being returned to Mailproxy) and failover automatically.
+- After adding a few more gateways, evaluate the pattern used in the `MailgunMailer` and `SendgridMailer` and adjust based on experience implementing several new mailing services.
+- Automatic detection of new mail gateway implementations so that `config/initializers/mail_gateway.rb` is no longer needed.
