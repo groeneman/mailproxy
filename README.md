@@ -37,13 +37,15 @@ Mailproxy exposes an `/email` endpoint that responds to `POST` requests and acce
 POST /emails
 
 {
-  “to”: “fake@example.com”,
-  “to_name”: “Mr. Fake”,
-  “from”: “noreply@fakecorp.com,
-  “from_name”: "Fake Corp Billing",
-  “subject”: “A Message from Fake Corporation,
-  “body”: “<h1>Your Bill</h1><p>$10</p>”
+  "to": "fake@example.com",
+  "to_name": "Mr. Fake",
+  "from": "noreply@fakecorp.com",
+  "from_name": "Fake Corp Billing",
+  "subject": "A Message from Fake Corporation",
+  "body": "<h1>Your Bill</h1><p>$10</p>"
 }```
+
+If the parameters are valid and Mailproxy is able to deliver the message, it will respond with `200 OK` (with no response body). If the parameters were invalid, it will respond with `400 Bad Request` with an array of `errors`. If the parameters were valid but Mailproxy received an error from the gateway, it will respond with `500 Internal Server Error`, along with an array of `errors` that can assist in troubleshooting the gateway.
 
 ## Changing mail gateway
 
@@ -51,4 +53,11 @@ Mailproxy is designed to allow the mail gateway provider to be changed quickly i
 
 ## Adding additional gateways
 
-Additional mail gateways can be supported by creating a module that responds to `.call` (a `Proc` can also be passed). The `.call` method will receive an instance of the `Message` object, which responds to methods named exactly the same as the API parameters, as well as an additional `sanitized_body` method that returns the body as plain text. The `Proc` or module should make API requests as necessary to the mail gateway.
+Additional mail gateways can be supported by creating a class that responds to the following methods:
+
+- `#initialize` takes a `Message` object (described below).
+- `#call` delivers the message
+- `#ok?` returns true if the message was delivered, false otherwise
+- `#errors` returns an array of errors from the gateway if the message was note delivered.
+
+The `Message` object responds to methods named exactly the same as the API parameters, as well as an additional `sanitized_body` method that returns the body as plain text.
