@@ -9,8 +9,9 @@ A simple app that sends email messages through a third party gateway. Sendgrid a
 Requirements: Ruby 2.4.0 (other Ruby 2.x versions likely work, but haven't been tested), Bundler
 
 1. Clone the project
-2. `bundle`
-3. `bundle exec rails s`
+2. Install dependencies: `bundle`
+3. Configure your your mail gateway credentials by setting the `SENDGRID_API_KEY` and/or `MAILGUN_ENDPOINT` environment variables.
+4. Run the server: `bundle exec rails s`
 
 ### On Heroku
 
