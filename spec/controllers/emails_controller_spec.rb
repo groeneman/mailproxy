@@ -1,11 +1,11 @@
 describe EmailsController do
   describe 'POST: #send' do
-    it 'renders bad request when invalid parameters are passed' do
+    it 'responds with bad_request when invalid parameters are passed' do
       post(:deliver)
       expect(response).to have_http_status(:bad_request)
     end
 
-    it 'renders bad request when invalid parameters are passed' do
+    it 'responds with ok with no body when valid parameters are passed' do
       post(:deliver, params: {
         to: 'michael@groeneman.com',
         to_name: 'Michael Groeneman',

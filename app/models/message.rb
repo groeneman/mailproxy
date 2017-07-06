@@ -16,7 +16,7 @@ class Message
     Rails::Html::FullSanitizer.new.sanitize(body)
   end
 
-  def deliver(service = SendgridMailer)
-    service.call(self)
+  def mailer(service = Rails.configuration.default_mail_gateway)
+    service.new(self)
   end
 end

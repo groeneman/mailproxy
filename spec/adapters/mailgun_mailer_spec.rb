@@ -10,10 +10,25 @@ describe MailgunMailer do
     })
   end
 
+  subject { described_class.new(message) }
+
+  let(:ok_response) do
+    instance_double(RestClient::Response, code: 200)
+  end
+
+  let(:error_response) do
+    instance_double(RestClient::Response,
+      code: 400,
+      body: { message: 'An error of some sort' }.to_json
+    )
+  end
+
+  let(:exception) { RestClient::ExceptionWithResponse.new(error_response) }
+
   it 'makes a POST request to the sendgrid API endpoint' do
     endpoint = Rails.application.secrets.mailgun_endpoint
     expect(RestClient).to receive(:post).with(endpoint, anything)
-    described_class.call(message)
+    subject.call
   end
 
   it 'sends the correct API parameters' do
@@ -25,6 +40,28 @@ describe MailgunMailer do
     }
 
     expect(RestClient).to receive(:post).with(anything, params)
-    described_class.call(message)
+    subject.call
   end
+
+  it 'returns true for #ok? after a successful call' do
+    allow(RestClient).to receive(:post).and_return(ok_response)
+    subject.call
+
+    expect(subject).to be_ok
+  end
+
+  it 'returns false for #ok? when an error is returned by the gateway' do
+    allow(RestClient).to receive(:post).and_raise(exception)
+    subject.call
+
+    expect(subject).not_to be_ok
+  end
+
+  it 'returns an array of #errors when an error is returned by the gateway' do
+    allow(RestClient).to receive(:post).and_raise(exception)
+    subject.call
+
+    expect(subject.errors).to eq(['An error of some sort'])
+  end
+
 end

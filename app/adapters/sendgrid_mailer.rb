@@ -1,8 +1,14 @@
 # SendGrid API docs: https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html
-module SendgridMailer
+class SendgridMailer
   API_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
 
-  def self.call(message)
+  attr_reader :message
+
+  def initialize(message)
+    @message = message
+  end
+
+  def call
     body = {
       personalizations: [
         {
@@ -15,15 +21,23 @@ module SendgridMailer
     }
 
     begin
-      RestClient.post(API_ENDPOINT, body.to_json, headers)
+      @response = RestClient.post(API_ENDPOINT, body.to_json, headers)
     rescue RestClient::ExceptionWithResponse => e
-      e.response
+      @response = e.response
     end
+  end
+
+  def ok?
+    @response&.code < 300
+  end
+
+  def errors
+    JSON.parse(@response.body)['errors'].map { |e| e['message'] }
   end
 
   private
 
-  def self.headers
+  def headers
     {
       Authorization: "Bearer #{ Rails.application.secrets.sendgrid_api_key }",
       'Content-Type': 'application/json'
